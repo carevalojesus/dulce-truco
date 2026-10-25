@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#140e27">
+  <meta name="description" content="Dulce o Truco: un juego de Halloween creado con PostgreSQL, Supabase y Cloudflare Pages.">
+  <title>Dulce o Truco · Halloween SQL</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="ambient ambient-1" aria-hidden="true"></div>
+  <div class="ambient ambient-2" aria-hidden="true"></div>
+  <div class="wrapper">
+    <header class="topbar">
+      <a href="#inicio" class="brand" aria-label="Dulce o Truco, inicio"><span class="brand-mark">🎃</span><span>DULCE<span class="brand-accent">/</span>TRUCO</span></a>
+      <div class="top-right"><span class="event-tag"><span class="event-dot"></span> EVENTO HALLOWEEN</span><span class="live-pill" id="connectionStatus">Modo presentación</span></div>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">🕸️ &nbsp; EL DESAFÍO DE LAS CASAS MISTERIOSAS</div>
+          <h1>¿<span class="shine-orange">DULCE</span><br>O <span class="shine-purple">TRUCO</span>?</h1>
+          <p class="hero-lead">Hay seis casas embrujadas y solo <strong>tres oportunidades</strong>. Detrás de cada puerta te espera un dulce que suma puntos... o un truco que te los quita. 👀</p>
+          <div class="hero-meta"><span>🏠 6 casas</span><span>🎲 3 turnos</span><span>🏆 Ranking en vivo</span></div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="halo"></div><div class="moon">🌕</div><div class="bat bat-a">🦇</div><div class="bat bat-b">🦇</div>
+          <div class="ghost ghost-a">👻</div><div class="castle">🏚️</div><div class="pumpkin pumpkin-a">🎃</div><div class="candy candy-a">🍬</div><div class="candy candy-b">🍭</div>
+        </div>
+      </section>
+
+      <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+
+      <section id="joinSection" class="join-section">
+        <div class="join-text"><span class="small-label">01 / COMIENZA AQUÍ</span><h2>Tu entrada al mundo misterioso</h2><p>Elige un apodo. No necesitas correo ni contraseña.</p></div>
+        <form id="joinForm" class="join-form">
+          <label class="sr-only" for="nickname">Tu apodo</label>
+          <input id="nickname" autocomplete="nickname" maxlength="20" minlength="2" placeholder="Escribe tu apodo..." required>
+          <button type="submit" id="joinButton" class="button-primary">¡Entrar al juego! <span>→</span></button>
+        </form>
+        <p class="small-note">Al participar se crea una cuenta anónima para guardar tu progreso en este navegador.</p>
+      </section>
+
+      <section class="dashboard" id="dashboard" hidden>
+        <div class="welcome"><div><span class="small-label">TU PERFIL DE AVENTURERO</span><h2>¡Hola, <span id="playerName">aventurero</span>! <span class="wave">👋</span></h2></div><span class="maxturn-tag" id="playerRank">Participando</span></div>
+        <div class="stats"><div class="stat"><span class="stat-label">PUNTOS ACUMULADOS</span><strong id="myScore">0</strong><span class="stat-desc">Consigue el mejor puntaje</span></div><div class="stat"><span class="stat-label">CASAS VISITADAS</span><strong><span id="usedTurns">0</span><span class="stat-total"> / 3</span></strong><span class="stat-desc">Cada casa solo una vez</span></div><div class="stat"><span class="stat-label">CASAS DISPONIBLES</span><strong id="availableDoors">6</strong><span class="stat-desc">Atrévete a abrir otra puerta</span></div></div>
+      </section>
+
+      <section class="section game-section" id="gameSection">
+        <div class="section-heading"><div><span class="small-label">02 / ELIGE TU DESTINO</span><h2>El vecindario embrujado <span class="section-emoji">🏘️</span></h2><p id="gameCaption">Cada casa esconde una sorpresa. ¿Cuál abrirías primero?</p></div><div class="three-trips">✦ &nbsp; 3 OPORTUNIDADES</div></div>
+        <div class="houses-grid" id="housesGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="section rank-section" id="rankSection">
+        <div class="section-heading"><div><span class="small-label">03 / LA COMPETENCIA</span><h2>El salón de la fama <span class="section-emoji">🏆</span></h2><p>Los puntos vienen directamente de PostgreSQL.</p></div><div class="ranking-bubble"><span class="pulse"></span> <span id="rankingIndicator">Esperando jugadores</span></div></div>
+        <div class="ranking-panel"><div class="ranking-table-head"><span>PUESTO / AVENTURERO</span><span>PUNTOS</span><span>CASAS</span></div><div id="rankingList" class="ranking-list"><div class="empty-ranking">Ingresa al juego para ver el ranking en vivo.</div></div></div>
+      </section>
+
+      <footer><span>🎃 DULCE / TRUCO</span><span>Construido con <b>PostgreSQL + Supabase + JavaScript</b> · Publicable en Cloudflare Pages</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
